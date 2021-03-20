@@ -1,0 +1,31 @@
+rule start
+defn statement
+end
+
+rule statement
+defn expression -EOI-
+defn expression statement
+fail return call sync SEMI
+end
+
+rule expression
+defn term plus_minus_expr SEMI
+end
+
+rule plus_minus_expr?
+defn PLUS term
+goal call add
+defn MINUS term
+goal call sub
+end
+
+rule term
+defn factor
+end
+
+rule factor
+defn INT
+goal call push_int
+defn DOUBLE
+goal call push_dbl
+end

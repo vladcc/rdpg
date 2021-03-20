@@ -1,0 +1,5 @@
+rule -> defn
+defn -> defn | goal | fail | end
+goal -> defn | fail | end
+fail -> end
+end -> rule
