@@ -1,4 +1,9 @@
 # <rdpg_ir>
+
+# Author: Vladimir Dinev
+# vld.dinev@gmail.com
+# 2021-03-20
+
 # version 1.0
 # A generic intermediate representation. If optimization is performed, it's
 # performed on this. Then it's fed into a back-end for translation to the target

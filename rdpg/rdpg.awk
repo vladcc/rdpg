@@ -1,5 +1,9 @@
 #!/usr/bin/awk -f
 
+# Author: Vladimir Dinev
+# vld.dinev@gmail.com
+# 2021-03-20
+
 function SCRIPT_NAME() {return "rdpg.awk"}
 function SCRIPT_VERSION() {return "1.0"}
 

@@ -186,18 +186,3 @@ diff /dev/fd/63 ../examples/infix_calc_grammar.txt
 [ 1 -ne 0 ]
 diff <(echo "left recursion in file './test_rdpg/test_left_recursion_direct.txt' from line 1: foo -> foo
 rdpg.awk: error: left recursion detected") <(echo "left recursion in file './test_rdpg/test_left_recursion_direct.txt' from line 1: foo -> foo
-
-
-Why awk?
-Mostly, because awk is awesome. Let alone how well designed it is for text
-processing, it also gives you a runtime stack, regular expressions, the string
-as the basic scalar value, and the associative array as the basic data
-structure. You can do recursion, have generic representations as strings, and
-build whatever data structure you'd like on top of the hash table. It's like a
-Swiss army knife for computer science. Will you be able to chop down a tree? No.
-Will you be able to fix your tent, catch a fish, and start a fire? Absolutely.
-Not to mention how succinct it is. This project is basically an optimizing
-compiler with two backends (so far) in about 2200 lines. 1900 if you don't count
-full line comments and help messages. And that's without trying to keep it
-short. It hardly gets better than this. Am I biased? Yes. Cause awk is super
-cool. And is also everywhere.
