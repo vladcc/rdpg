@@ -2,10 +2,10 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-03-20
+# 2021-06-03
 
 function SCRIPT_NAME() {return "rdpg.awk"}
-function SCRIPT_VERSION() {return "1.0"}
+function SCRIPT_VERSION() {return "1.1"}
 
 # <prefix_tree>
 # -- prefix tree --
@@ -84,9 +84,7 @@ function pft_add(tree, ind, val,    _tmp, _arr, _len, _add) {
 	if (pft_has(tree, ind)) {
 		_tmp = pft_get(tree, ind)
 		_len = pft_split_val(_tmp, _arr)
-		
-		if (!pft_arr_has(_arr, _len, val))
-			_add = pft_cat_val(_tmp, val)
+		_add = pft_arr_has(_arr, _len, val) ? _tmp : pft_cat_val(_tmp, val)
 	}
 	tree[ind] = _add
 }
