@@ -3,9 +3,13 @@ defn statement
 end
 
 rule statement
-defn expression -EOI-
+defn expression eoi
 defn expression statement
 fail return call sync SEMI
+end
+
+rule eoi?
+defn EOI
 end
 
 rule expression

@@ -1,6 +1,8 @@
 2021-06-03
 rdpg.awk v1.0 -> v1.1
 bug fix - pft_add(); the prefix tree would overwrite already existing values
+
+run-tests.sh
 pft_add_bug_fix test added
 
 2021-06-05
@@ -13,6 +15,12 @@ rdpg-opt.awk v1.0 -> v1.1
 bug fix - drop_redundant_else() screwed up when a function had no else clause in
 Olvl=2, which was throwing Olvl=3 in an infinite recursion
 change - the order of optimization passes; unreachable code is removed first
+change - -TOK- syntax is removed; can be achieved with an optional rule
 
 rdpg-to-awk.awk v1.0 -> v1.01; rdpg-to-c.awk v1.0 -> v1.01
-IR_GOAL() and IR_FAIL() code emit cleanup because of the change in rdpg.awk
+change - IR_GOAL() and IR_FAIL() code emit cleanup because of the change in
+rdpg.awk
+
+run-tests.sh
+test added - opt_olvl_3_inf_loop_fix
+test added - version_checks

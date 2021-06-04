@@ -118,13 +118,6 @@ function get_current_rule() {return get_rule(get_rule_count())}
 function is_terminal(str) {
 	return match(str, "^[[:upper:]][[:upper:][:digit:]_]*$")
 }
-function is_terminal_no_err_re_check(str) {
-	return match(str, "^-[[:upper:]][[:upper:][:digit:]_]*-$")
-}
-function term_no_err_sanitize(str) {
-	gsub("-", "", str)
-	return str
-}
 
 function is_non_terminal(symb) {
 	return match(symb, "^[[:lower:]][[:lower:][:digit:]_]*\\??$")
@@ -146,7 +139,7 @@ function add_defn_to_rule(tree, rule, defn,    _root, _val, _i, _arr, _len) {
 	for (_i = 1; _i <= _len; ++_i) {
 		_val = _arr[_i]		
 		
-		pft_add(G_tree, _root, _val)
+		pft_add(tree, _root, _val)
 		_root = pft_cat_root(_root, _val)
 	}
 	pft_mark_end(tree, _root)
@@ -169,19 +162,10 @@ function syntax_check_rule(rule) {
 		error_input(sprintf("bad rule syntax '%s'", rule))
 }
 
-function term_no_err_set(str) {_B_term_no_err[str] = 1}
-function term_no_err_get(str) {return _B_term_no_err[str]}
-function is_term_no_err(term) {return term_no_err_get(term)}
-
 function syntax_check_defn(str,    _i, _len, _arr, _tmp) {
 	_len = split(str, _arr)
 	for (_i = 1; _i <= _len; ++_i) {
 		_tmp = _arr[_i]
-		
-		if (is_terminal_no_err_re_check(_tmp)) {
-			_tmp = term_no_err_sanitize(_tmp)
-			term_no_err_set(_tmp)
-		}
 		
 		if (!is_non_terminal(_tmp) && !is_terminal(_tmp)) {
 			error(sprintf("bad syntax: '%s' not a terminal or a non-terminal",
@@ -189,7 +173,7 @@ function syntax_check_defn(str,    _i, _len, _arr, _tmp) {
 		}
 	}
 	
-	return term_no_err_sanitize(str)
+	return str
 }
 # </misc>
 
@@ -528,7 +512,7 @@ function get_list_of_terminals(arr, len,    _symb, _i, _count, _str) {
 	_str = ""
 	for (_i = 1; _i <= len; ++_i) {
 		_symb = arr[_i]
-		if (is_terminal(_symb) && !is_term_no_err(_symb)) {
+		if (is_terminal(_symb)) {
 			++_count
 			_str = sprintf("%s%s ", _str, _symb)
 		}
@@ -734,9 +718,9 @@ print "defn MINUS term"
 print "end"
 print ""
 print "Note that an epsilon transition is marked by a '?' after the rule name."
-print "That makes it easier to parse. A goal can be associated with each definition."
-print "A goal is an action, usually a function call, which is executed after a"
-print "successful match of a definition."
+print "This makes it easier for the line parser to parse. A goal can be"
+print "associated with each definition. A goal is an action, usually a function"
+print "call, which is executed after a successful match of the definition:"
 print ""
 print "rule plus_minus_term?"
 print "defn PLUS term"
@@ -764,7 +748,7 @@ print sprintf("be found in %s. This intermediate representation output can then"
 print "be piped into the optimizer - rdpg-opt.awk, which, depending on the"
 print "optimization level, can replace naive code like 'if (foo()) {return true}"
 print "else {return false}' with something more succinct like 'return foo()'. It"
-print "can also get rid of redundant elses, unreachable code (define as any code"
+print "can also get rid of redundant elses, unreachable code (defined as any code"
 print "between the first return statement in the current block and the end of the"
 print "same block), optimize tail recursion, and inline functions. If optimization"
 print "is used, the output of the optimizer is again ir code. Ultimately, the ir"
@@ -801,42 +785,18 @@ print "which gets translated to a function call. Any upper case symbol is a toke
 print "which gets translated to a token matching functions. " SCRIPT_NAME() " assumes the"
 print "existence of three token related functions - one for consuming a token, one for"
 print "matching the current token to an expected token, and one for reporting mismatch"
-print "error. The mismatch error is generally supposed to have the form of 'expected"
-print "X, got Y instead'. The assumed names of the three functions can be found in the"
+print "errors. A mismatch error is generally supposed to have the form of 'expected X,"
+print "got Y instead'. The assumed names of the three functions can be found in the"
 print "IR_TOK_* constants."
 print ""
 print "It's worth mentioning that if a rule is nullable, i.e. if it ends with a"
 print "'?', this in practice means that:"
 print "a) token mismatches do not generate errors inside that rule"
-print "b) the caller rule always returns true whether or not the nullable rule failed"
-print "This is because making a rule nullable makes it optional, i.e. it's ok not to"
-print "match."
-print ""
-print "Lastly, if you'd like to *not* have an error on token mismatch in an ordinary"
-print "rule, you can mark that token with dashes on both sides. E.g. 'TOKEN' becomes"
-print "'-TOKEN-'. This sometimes make sense. For example:"
-print ""
-print "rule program"
-print "defn statements"
-print "end"
-print ""
-print "rule statements"
-print "defn statement EOI"
-print "defn statement statements"
-print "end"
-print ""
-print "Here you can't really mismatch EOI, since you can't be in the situation of"
-print "'I expected to see the end of input, but I see something else instead.'"
-print "However, a token mismatch error for EOI is still generated, which gets in the"
-print "way of the tail recursion optimization. Because of this, each parsed statement"
-print "will result in yet another stack frame. A program will presumably have a lot"
-print "of statements, so you could potentially run out of stack. This avoids it:"
-print ""
-print "rule statements"
-print "defn statement -EOI-"
-print "defn statement statements"
-print "end"
-	exit_success()
+print "b) the caller rule always returns true whether or not the nullable rule failed,"
+print "given that the nullable rule is the only call, i.e. it's not a part of an if"
+print "chain of calls. This is because making a rule nullable makes it optional, i.e."
+print "it's ok not to match."
+exit_success()
 }
 
 function print_example() {
@@ -845,10 +805,13 @@ print "rule parse"
 print "defn statements"
 print "end"
 print ""
-print "# -EOI- makes tail recursion optimization possible"
 print "rule statements"
-print "defn statement -EOI-"
+print "defn statement eoi"
 print "defn statement statements"
+print "end"
+print ""
+print "rule eoi?"
+print "defn EOI"
 print "end"
 print ""
 print "# if parsing an expression failed, eat tokens until you see ';'"

@@ -3,10 +3,13 @@ rule parse
 defn statements
 end
 
-# -EOI- makes tail recursion optimization possible
 rule statements
-defn statement -EOI-
+defn statement eoi
 defn statement statements
+end
+
+rule eoi?
+defn EOI
 end
 
 # if parsing an expression failed, eat tokens until you see ';'

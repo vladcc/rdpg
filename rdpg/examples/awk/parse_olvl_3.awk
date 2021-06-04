@@ -10,15 +10,23 @@ function parse(    _arr) {
 }
 function statements(    _arr) {
 # rule statements
-# defn statement -EOI-
+# defn statement eoi
 # defn statement statements
 	if (statement()) {
-		if (tok_match(EOI())) {
-			tok_next()
+		if (eoi()) {
 			return 1
 		} else {
 			return statements()
 		}
+	}
+	return 0
+}
+function eoi(    _arr) {
+# rule eoi?
+# defn EOI
+	if (tok_match(EOI())) {
+		tok_next()
+		return 1
 	}
 	return 0
 }

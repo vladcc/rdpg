@@ -5,6 +5,7 @@ typedef struct prs_state prs_state;
 #include <stdbool.h>
 static bool parse(prs_state * prs, usr_state * usr);
 static bool statements(prs_state * prs, usr_state * usr);
+static bool eoi(prs_state * prs, usr_state * usr);
 static bool statement(prs_state * prs, usr_state * usr);
 static bool expression_sync(prs_state * prs, usr_state * usr);
 static bool expression(prs_state * prs, usr_state * usr);
@@ -35,22 +36,30 @@ static bool parse(prs_state * prs, usr_state * usr)
 static bool statements(prs_state * prs, usr_state * usr)
 {
 // rule statements
-// defn statement -EOI-
+// defn statement eoi
 // defn statement statements
 	while (true)
 	{
 		if (statement(prs, usr))
 		{
-			if (tok_match(prs, EOI))
-			{
-				tok_next(prs);
+			if (eoi(prs, usr))
 				return true;
-			}
 			else 
 				continue;
 		}
 		return false;
 	}
+}
+static bool eoi(prs_state * prs, usr_state * usr)
+{
+// rule eoi?
+// defn EOI
+	if (tok_match(prs, EOI))
+	{
+		tok_next(prs);
+		return true;
+	}
+	return false;
 }
 static bool statement(prs_state * prs, usr_state * usr)
 {

@@ -10,11 +10,25 @@ readonly G_EXAMPLE="../examples/infix_calc_grammar.txt"
 
 function test_all
 {
+	version_checks
 	test_bug_fixes
 	test_rdpg
 	test_rdpg_opt
 	test_end_to_end	"$@"
 }
+
+# <version_checks>
+function version_checks
+{
+	local L_TO_C="../rdpg-to-c.awk"
+	local L_TO_AWK="../rdpg-to-awk.awk"
+	
+	diff_ "<(awk -f $G_RDPG -vVersion=1)" "<(echo 'rdpg.awk 1.11')"
+	diff_ "<(awk -f $G_RDPG_OPT -vVersion=1)" "<(echo 'rdpg-opt.awk 1.1')"
+	diff_ "<(awk -f $L_TO_C -vVersion=1)" "<(echo 'rdpg-to-c.awk 1.01')"
+	diff_ "<(awk -f $L_TO_AWK -vVersion=1)" "<(echo 'rdpg-to-awk.awk 1.01')"
+}
+# </version_checks>
 
 # <test_bug_fixes>
 function test_bug_fixes

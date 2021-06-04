@@ -19,13 +19,12 @@ func_end
 func statement
 block_open statement_1
 comment rule statement
-comment defn expression -EOI-
+comment defn expression eoi
 comment defn expression statement
 	if call expression
 	block_open statement_2
-		if call tok_match EOI
+		if call eoi
 		block_open statement_3
-			call tok_next
 			return true
 		block_close statement_3
 		else_if call statement
@@ -43,6 +42,21 @@ comment defn expression statement
 		return false
 	block_close statement_2
 block_close statement_1
+func_end
+func eoi
+block_open eoi_1
+comment rule eoi?
+comment defn EOI
+	if call tok_match EOI
+	block_open eoi_2
+		call tok_next
+		return true
+	block_close eoi_2
+	else
+	block_open eoi_2
+		return false
+	block_close eoi_2
+block_close eoi_1
 func_end
 func expression
 block_open expression_1
