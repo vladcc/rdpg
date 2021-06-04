@@ -2,11 +2,11 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-03-20
+# 2021-06-04
 
 # <script>
 function SCRIPT_NAME() {return "rdpg-opt.awk"}
-function SCRIPT_VERSION() {return "1.0"}
+function SCRIPT_VERSION() {return "1.1"}
 # </script>
 
 # <input>
@@ -448,7 +448,7 @@ function drop_redundant_else_swap_out_last_ret(arr, ret_pos,    _str) {
 	}
 }
 
-function drop_redundant_else(arr, len,    _i, _ret) {
+function drop_redundant_else(arr, len,    _i, _ret, _has_else) {
 # if (foo())
 # 	if (bar())
 # 		return true
@@ -462,6 +462,17 @@ function drop_redundant_else(arr, len,    _i, _ret) {
 # 		return true
 # return false
 
+	# there actually needs to be an else
+	for (_i = 1; _i <= len; ++_i) {
+		if (is_else(arr[_i])) {
+			_has_else = 1
+			break
+		}
+	}
+
+	if (!_has_else)
+		return
+		
 	_i = get_last_return(arr, len)
 	
 	if (is_return_const(arr[_i])) {

@@ -2,3 +2,8 @@
 rdpg.awk v1.0 -> v1.1
 bug fix - pft_add(); the prefix tree would overwrite already existing values
 pft_add_bug_fix test added
+
+2021-06-04
+rdpg-opt.awk v1.0 -> v1.1
+bug fix - drop_redundant_else() screwed up when a function had no else clause in
+Olvl=2, which was throwing Olvl=3 in an infinite recursion

@@ -19,11 +19,21 @@ function test_all
 # <test_bug_fixes>
 function test_bug_fixes
 {
+	opt_olvl_3_inf_loop_fix
 	pft_add_bug_fix
+}
+function opt_olvl_3_inf_loop_fix
+{
+	local L_RUN=\
+"$G_AWK -f $G_RDPG_IR -f $G_RDPG ./test_rdpg/test_rdpg_opt_olvl3_inf_loop.txt"\
+" | $G_AWK -f $G_RDPG_IR -f $G_RDPG_OPT -vOlvl=3"
+
+	diff_ "<($L_RUN)" "./test_rdpg/accept_rdpg_opt_olvl3_inf_loop.txt"
 }
 function pft_add_bug_fix
 {
 	local L_RUN="$G_AWK -f $G_RDPG_IR -f $G_RDPG"
+	
 	diff_ "<($L_RUN ./test_rdpg/test_pft_add_bug_fix.txt)" \
 		"./test_rdpg/accept_pft_add_bug_fix.txt"
 }
