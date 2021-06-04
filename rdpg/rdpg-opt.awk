@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-06-04
+# 2021-06-05
 
 # <script>
 function SCRIPT_NAME() {return "rdpg-opt.awk"}
@@ -588,15 +588,8 @@ function remove_unreachable_delete_past_return(arr, len, where,
 		
 	_str = arr[where]
 
-	if (is(1, _step) &&
-		(is_return(_str) || 
-		(is(IR_GOAL(), get_field(_str, 1)) &&
-		is(IR_RETURN(), get_field(_str, 2)))) ||
-		(is(IR_FAIL(), get_field(_str, 1)) &&
-		is(IR_RETURN(), get_field(_str, 2)))) {
-	
+	if (is(1, _step) && is_return(_str)) {
 		_step = 2
-	
 	} else if (is(2, _step) && !is_block_close(_str)) {
 		arr[where] = ""
 	} else {
@@ -765,7 +758,7 @@ function optimize_lvl1(    _i, _end, _arr, _len, _fname) {
 		_fname = func_get_name(_i)
 		_len = func_split(func_get_code(_fname), _arr)
 		
-		if_call_returns_only(_arr, _len)
+		remove_unreachable_code(_arr, _len)
 		
 		func_rewrite_full(_fname, arr_to_str(_arr, _len))
 	}
@@ -779,7 +772,7 @@ function optimize_lvl2(    _i, _end, _arr, _len, _fname) {
 		_fname = func_get_name(_i)
 		_len = func_split(func_get_code(_fname), _arr)
 		
-		drop_redundant_else(_arr, _len)
+		if_call_returns_only(_arr, _len)
 		
 		func_rewrite_full(_fname, arr_to_str(_arr, _len))
 	}
@@ -793,7 +786,7 @@ function optimize_lvl3(    _i, _end, _arr, _len, _fname) {
 		_fname = func_get_name(_i)
 		_len = func_split(func_get_code(_fname), _arr)
 		
-		remove_unreachable_code(_arr, _len)
+		drop_redundant_else(_arr, _len)
 		
 		func_rewrite_full(_fname, arr_to_str(_arr, _len))
 	}
@@ -821,7 +814,7 @@ function optimize(lvl) {
 	
 	if (lvl >= 1) 
 		optimize_lvl1()
-		
+	
 	if (lvl >= 2)
 		optimize_lvl2()
 	

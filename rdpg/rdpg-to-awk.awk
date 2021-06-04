@@ -2,11 +2,11 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-03-20
+# 2021-06-05
 
 # <script>
 function SCRIPT_NAME() {return "rdpg-to-awk.awk"}
-function SCRIPT_VERSION() {return "1.0"}
+function SCRIPT_VERSION() {return "1.01"}
 # </script>
 
 # <input>
@@ -188,14 +188,7 @@ function emit_defn(arr_code, len,    _i, _arr_line, _instr, _line, _tmp) {
 			new_line()
 		} else if (is(_instr, IR_GOAL())) {
 		
-			if (is(_arr_line[2], IR_RETURN())) {
-				emit_return()
-				if (is(_arr_line[3], IR_CALL())) {
-					sub(IR_GOAL(), "", _line)
-					sub(IR_RETURN(), "", _line)
-					emit_call(_line)
-				}
-			} else if (is(_arr_line[2], IR_CALL())) {
+			if (is(_arr_line[2], IR_CALL())) {
 				sub(IR_GOAL(), "", _line)
 				out_tabs()
 				emit_call(_line)
@@ -205,14 +198,8 @@ function emit_defn(arr_code, len,    _i, _arr_line, _instr, _line, _tmp) {
 			new_line()
 			
 		} else if (is(_instr, IR_FAIL())) {
-			if (is(_arr_line[2], IR_RETURN())) {
-				emit_return()
-				if (is(_arr_line[3], IR_CALL())) {
-					sub(IR_FAIL(), "", _line)
-					sub(IR_RETURN(), "", _line)
-					emit_call(_line)
-				}
-			} else if (is(_arr_line[2], IR_CALL())) {
+
+			if (is(_arr_line[2], IR_CALL())) {
 				sub(IR_FAIL(), "", _line)
 				out_tabs()
 				emit_call(_line)

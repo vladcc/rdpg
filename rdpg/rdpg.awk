@@ -2,10 +2,10 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-06-03
+# 2021-06-05
 
 function SCRIPT_NAME() {return "rdpg.awk"}
-function SCRIPT_VERSION() {return "1.1"}
+function SCRIPT_VERSION() {return "1.11"}
 
 # <prefix_tree>
 # -- prefix tree --
@@ -484,8 +484,35 @@ function emit_else_if(str) {
 }
 function emit_else(str) {print_ind_line(IR_ELSE())}
 function emit_return(str) {print_ind_line(sprintf("%s %s", IR_RETURN(), str))}
-function emit_goal(str) {print_ind_line(sprintf("%s %s", IR_GOAL(), str))}
-function emit_fail(str) {print_ind_line(sprintf("%s %s", IR_FAIL(), str))}
+
+function expose_return(str,    _arr, _tmp, _ret) {
+	# expose the return only if it has valid IR syntax, so it can be considered
+	# in the optimization stage
+	
+	_ret = str
+	
+	split(str, _arr)
+	_tmp = _arr[1]
+	if (IR_GOAL() == _tmp || IR_FAIL() == _tmp) {
+		_tmp = _arr[2]
+		if (IR_RETURN() == _tmp) {
+			_tmp = _arr[3]
+			if (IR_TRUE() == _tmp || IR_FALSE() == _tmp || IR_CALL() == _tmp)
+				_ret = remove_first_field(str)
+		}
+	}
+
+	return _ret
+}
+function emit_goal(str) {
+	print_ind_line(sprintf("%s",
+		expose_return(sprintf("%s %s", IR_GOAL(), str))))
+}
+function emit_fail(str) {
+	print_ind_line(sprintf("%s",
+		expose_return(sprintf("%s %s", IR_FAIL(), str))))
+}
+
 function emit_comment(str) {print_puts(sprintf("%s %s", IR_COMMENT(), str))}
 function emit_block_open(fname) {
 	print_ind_line(sprintf("%s %s_%d", IR_BLOCK_OPEN(), fname, ++_B_n))
