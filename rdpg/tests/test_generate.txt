@@ -5,7 +5,7 @@ end
 rule statement
 defn expression eoi
 defn expression statement
-fail return call sync SEMI
+fail return call sync _SEMI
 end
 
 rule eoi?
@@ -13,10 +13,10 @@ defn EOI
 end
 
 rule expression
-defn term plus_minus_expr SEMI
+defn term _plus_minus_expr _SEMI
 end
 
-rule plus_minus_expr?
+rule _plus_minus_expr?
 defn PLUS term
 goal call add
 defn MINUS term

@@ -5,7 +5,7 @@
 # 2021-06-05
 
 function SCRIPT_NAME() {return "rdpg.awk"}
-function SCRIPT_VERSION() {return "1.11"}
+function SCRIPT_VERSION() {return "1.12"}
 
 # <prefix_tree>
 # -- prefix tree --
@@ -116,11 +116,11 @@ function rule_line_map_get(rule) {return _B_rule_line[rule]}
 function is_a_rule(str){return rule_line_map_get(str)}
 function get_current_rule() {return get_rule(get_rule_count())}
 function is_terminal(str) {
-	return match(str, "^[[:upper:]][[:upper:][:digit:]_]*$")
+	return match(str, "^[_[:upper:]][[:upper:][:digit:]_]*$")
 }
 
 function is_non_terminal(symb) {
-	return match(symb, "^[[:lower:]][[:lower:][:digit:]_]*\\??$")
+	return match(symb, "^[_[:lower:]][[:lower:][:digit:]_]*\\??$")
 }
 function rule_process_name(rule,    _rule) {
 	_rule = rule
@@ -514,7 +514,9 @@ function get_list_of_terminals(arr, len,    _symb, _i, _count, _str) {
 		_symb = arr[_i]
 		if (is_terminal(_symb)) {
 			++_count
-			_str = sprintf("%s%s ", _str, _symb)
+			_str = sprintf("%s%s", _str, _symb)
+			if (_i != len)
+				_str = (_str " ")
 		}
 	}
 	return (_count) ? sprintf("%d %s", _count, _str) : ""
