@@ -11,6 +11,7 @@ readonly G_EXAMPLE="../examples/infix_calc_grammar.txt"
 function test_all
 {
 	version_checks
+	test_misc
 	test_bug_fixes
 	test_rdpg
 	test_rdpg_opt
@@ -26,9 +27,51 @@ function version_checks
 	diff_ "<(awk -f $G_RDPG -vVersion=1)" "<(echo 'rdpg.awk 1.12')"
 	diff_ "<(awk -f $G_RDPG_OPT -vVersion=1)" "<(echo 'rdpg-opt.awk 1.1')"
 	diff_ "<(awk -f $L_TO_C -vVersion=1)" "<(echo 'rdpg-to-c.awk 1.01')"
-	diff_ "<(awk -f $L_TO_AWK -vVersion=1)" "<(echo 'rdpg-to-awk.awk 1.01')"
+	diff_ "<(awk -f $L_TO_AWK -vVersion=1)" "<(echo 'rdpg-to-awk.awk 1.02')"
 }
 # </version_checks>
+
+# <test_misc>
+function test_misc
+{
+	test_rdpg_awk_tok_call_prefix
+}
+
+function test_rdpg_awk_tok_call_prefix
+{
+	run_rdpg \
+	"test_generate.txt"\
+	"| awk -f ../rdpg_ir.awk -f ../rdpg-to-awk.awk"\
+	"> $G_TEST_RES"
+	bt_assert_success
+	
+	diff_ "<(echo 0)"\
+	"<(cat $G_TEST_RES | grep -Eo '\<foo_tok_[[:alpha:]_]+' | wc -l)"
+
+	diff_ \
+	"<(printf '%s\n%s\n%s\n' 'tok_err_exp' 'tok_match' 'tok_next')"\
+	"<(cat $G_TEST_RES | grep -Eo '\<tok_[[:alpha:]_]+' | sort -u)"
+
+	diff_ "<(echo 0)" "<(grep -c '\<foo_tok_err_exp(_arr, 2)' $G_TEST_RES)"
+	diff_ "<(echo 1)" "<(grep -c '\<tok_err_exp(_arr, 2)' $G_TEST_RES)"
+	
+	run_rdpg \
+	"test_generate.txt"\
+	"| awk -f ../rdpg_ir.awk -f ../rdpg-to-awk.awk -vTokCallPrefix='foo_'"\
+	"> $G_TEST_RES"
+	bt_assert_success
+	
+	diff_ "<(echo 0)"\
+	"<(cat $G_TEST_RES | grep -Eo '\<tok_[[:alpha:]_]+' | wc -l)"
+
+	diff_ \
+	"<(printf '%s\n%s\n%s\n' 'foo_tok_err_exp' 'foo_tok_match' 'foo_tok_next')"\
+	"<(cat $G_TEST_RES | grep -Eo '\<foo_tok_[[:alpha:]_]+' | sort -u)"
+
+	diff_ "<(echo 1)" "<(grep -c '\<foo_tok_err_exp(_arr, 2)' $G_TEST_RES)"
+	diff_ "<(echo 0)" "<(grep -c '\<tok_err_exp(_arr, 2)' $G_TEST_RES)"
+}
+# </test_misc>
 
 # <test_bug_fixes>
 function test_bug_fixes

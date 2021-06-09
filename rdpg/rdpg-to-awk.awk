@@ -2,11 +2,11 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-06-05
+# 2021-06-10
 
 # <script>
 function SCRIPT_NAME() {return "rdpg-to-awk.awk"}
-function SCRIPT_VERSION() {return "1.01"}
+function SCRIPT_VERSION() {return "1.02"}
 # </script>
 
 # <input>
@@ -30,6 +30,8 @@ function init() {
 		print_help()
 	if (Version)
 		print_version()
+		
+	npref_set(TokCallPrefix)
 }
 BEGIN {
 	init()
@@ -57,6 +59,8 @@ function error(str) {
 }
 
 function is(a, b) {return (a == b)}
+function npref_set(str) {_B_npref = str}
+function npref_get() {return _B_npref}
 #</misc>
 
 # <output>
@@ -88,11 +92,21 @@ function emit_else() {out_str("} else {")}
 function emit_return() {out_str("return ")}
 function emit_goal(str) {out_str(str)}
 function emit_fail(str) {out_str(str)}
-function emit_call(str,    _i, _len, _arr, _fname, _how_many) {
+function emit_call(str,    _i, _len, _arr, _fname, _how_many, _is_tok_err) {
 	_len = split(str, _arr)
 	_fname = _arr[2]
+	_is_tok_err =  0
+
+	if (is(_fname, IR_TOK_ERR()) ||
+		is(_fname, IR_TOK_NEXT()) ||
+		is(_fname, IR_TOK_MATCH())) {
+
+		_is_tok_err = is(_fname, IR_TOK_ERR())
+
+		_fname = (npref_get() _fname)
+	}
 	
-	if (is(_fname, IR_TOK_ERR())) {
+	if (_is_tok_err) {
 		_how_many = _arr[3]
 		for (_i = 1; _i <= _how_many; ++_i) {
 			print sprintf("%s[%d] = %s()", _ARR(), _i, _arr[3+_i])
@@ -253,6 +267,8 @@ print "Use:"
 print sprintf("... | awk -f %s -f %s [opts...]", RDPG_IR(), SCRIPT_NAME())
 print ""
 print "Options:"
+print "-vTokCallPrefix=<prefix> - adds a prefix to all tok_*() calls; e.g."
+print "-vTokCallPrefix='foo_' results in foo_tok_*()"
 print "-vHelp=1    - print this screen"
 print "-vVersion=1 - print version"
 	exit_skip_end()

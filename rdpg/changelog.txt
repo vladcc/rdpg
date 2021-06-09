@@ -29,3 +29,10 @@ run-tests.sh
 	rdpg.awk v1.11 -> v1.12
 	bug fix - names can now begin with a '_'; test added to grammar
 	minor change - no more white space after tok_err_exp calls
+
+2021-06-10
+	rdpg-to-awk.awk v1.01 -> v1.02
+	added - -vTokCallPrefix so internally generated tok_*() can be prefixed;
+
+	run-tests.sh
+	test added - test_rdpg_awk_tok_call_prefix
