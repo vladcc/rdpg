@@ -1,3 +1,8 @@
+!!!NOTE!!! This project has moved to:
+https://github.com/vladcc/shawk/tree/main/shawk/awk/rdpg
+
+
+
 # rdpg
 Compiler-compiler in awk
 
