@@ -1,8 +1,12 @@
-!!!NOTE!!! This project has moved to:
+## rdpg 2.0 is out!
+
+Find here:
+
 https://github.com/vladcc/shawk/tree/main/shawk/awk/rdpg
 
+### NOTE: This repo is obsolete. Below is the old doc. Follow the above link for the latest version.
 
-
+```
 # rdpg
 Compiler-compiler in awk
 
@@ -20,7 +24,7 @@ able to use rdpg and the optimizer at the front of the pipeline.
 As a very short example:
 
 $ cd rdpg/
-$ head examples/infix_calc_grammar.txt 
+$ head examples/infix_calc_grammar.txt
 # start symbol
 rule parse
 defn statements
@@ -56,7 +60,7 @@ $ awk -f rdpg_ir.awk -f rdpg.awk examples/infix_calc_grammar.txt | head -n 25 | 
     23          block_open statements_2
     24                  if call eoi
     25                  block_open statements_3
-        
+
 A complete run with maximum optimization and translation to awk will look like:
 
 $ awk -f rdpg_ir.awk -f rdpg.awk <input-file> | \
@@ -125,7 +129,7 @@ $ awk -f rdpg_ir.awk -f rdpg.awk examples/infix_calc_grammar.txt | awk -f rdpg_i
     25                  }
 
 Any of the rdpg*.awk scripts except for rdpg_ir.awk can be invoked with the
--vHelp=1 flag for more information on what they do. 
+-vHelp=1 flag for more information on what they do.
 
 Below is a breakdown of the project structure.
 
@@ -181,3 +185,4 @@ diff <(awk -f ../rdpg-to-awk.awk -vVersion=1) <(echo 'rdpg-to-awk.awk 1.01')
 [ 0 -eq 0 ]
 diff <(awk -f ../rdpg_ir.awk -f ../rdpg.awk ./test_rdpg/test_rdpg_opt_olvl3_inf_loop.txt | awk -f ../rdpg_ir.awk -f ../rdpg-opt.awk -vOlvl=3) ./test_rdpg/accept_rdpg_opt_olvl3_inf_loop.txt
 [ 0 -eq 0 ]
+```
